@@ -12,11 +12,11 @@ const auth=async(req,res,next)=>{
         req.body.id=decoded.id
         next(); 
     } else {
-        res.send({ msg: "Please Login first" });
+        return res.send({ msg: "Please Login first" });
     }
     }
    } catch (error) {
-    res.status(400).send({msg:"Auth Middleware Error", error: error})
+    return res.status(400).send({msg:"Auth Middleware Error", error: error})
    }
 }
 

@@ -36,17 +36,17 @@ signin.post('/login',async (req,res)=>{
         bcrypt.compare(password,data.password,function (err, result){
             if(result){
                 let token=jwt.sign({id:data._id,name:data.name},'superneutic')
-                res.status(200).send({ msg: "Logged in Token passed Successfully", token: token });
+                return res.status(200).send({ msg: "Logged in Token passed Successfully", token: token });
             }else{
-              res.status(400).send({ msg: "Please Provide Correct Password" });
+              return  res.status(400).send({ msg: "Please Provide Correct Password" });
             }
         })
 
     } catch (error) {
-        res.status(400).send({message:error.message,error_occured:"/login catch"})
+      return  res.status(400).send({message:error.message,error_occured:"/login catch"})
     }
   }else{
-    res.status(400).send({message:"Please check the login creentials",error_occured:"LOGIN ROUTE"})
+    return res.status(400).send({message:"Please check the login creentials",error_occured:"LOGIN ROUTE"})
   }
 })
 module.exports = {
