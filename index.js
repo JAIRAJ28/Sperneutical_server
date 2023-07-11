@@ -3,8 +3,8 @@ const express = require("express");
 
 const app = express();
 app.use(cors());
-const http = require("http");
-const { connect } = require("./Connect/db");
+const http = require("http")
+const { connect } = require("./Connect/db")
 const { signin } = require("./Routes/Auth.route");
 const { auth } = require("./Middlewares/Auth");
 const { task } = require("./Routes/Task.route");
