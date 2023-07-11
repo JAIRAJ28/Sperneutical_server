@@ -9,8 +9,8 @@ signin.post('/signup', async (req, res) => {
     const pass = req.body.password;
     const name = req.body.name;
     try {
-      const existingUser = await usermodel.findOne({ email });
-      if (existingUser) {
+      const existingUser = await usermodel.find({ email });
+      if (existingUser.length>0) {
         return res.status(400).send({ message: "User already registered with this email" });
       }
       bcrypt.hash(pass, 5, async (err, hash) => {
@@ -30,12 +30,15 @@ signin.post('/login',async (req,res)=>{
   const email=req.body.email;
   const password=req.body.password;
   const data=await usermodel.findOne({email})
+  
   if(data){
     try {
         bcrypt.compare(password,data.password,function (err, result){
             if(result){
                 let token=jwt.sign({id:data._id,name:data.name},'superneutic')
                 res.status(200).send({ msg: "Logged in Token passed Successfully", token: token });
+            }else{
+              res.status(400).send({ msg: "Please Provide Correct Password" });
             }
         })
 
@@ -43,7 +46,7 @@ signin.post('/login',async (req,res)=>{
         res.status(400).send({message:error.message,error_occured:"/login catch"})
     }
   }else{
-    res.status(400).send({message:error.message,error_occured:"LOGIN ROUTE"})
+    res.status(400).send({message:"Please check the login creentials",error_occured:"LOGIN ROUTE"})
   }
 })
 module.exports = {
