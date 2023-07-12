@@ -12,7 +12,12 @@ require("dotenv").config();
 
 
 const Server = http.createServer(app);
-const io = Socket(Server);
+const io = Socket(Server,{
+  cors: {
+    origin: "*", // Allow requests from this origin
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allow specified methods
+  },
+});
 
 app.use(express.json())
 app.get("/", async (req, res) => {
