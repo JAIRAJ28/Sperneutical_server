@@ -92,7 +92,7 @@ task.get("/filter_task", async (req, res) => {
     if (tasks.length) {
       res.status(200).send(tasks);
     } else {
-      res.status(200).send({ message: "No task found" });
+      res.status(400).send({ message: "No task found" });
     }
   } catch (error) {
     res.status(400).send({ message: error.message });
