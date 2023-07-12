@@ -1,7 +1,7 @@
 const express = require("express");
 const { user_Task } = require("../Model/Task.model");
 const task = express.Router();
-
+const socket=require("../Socket/socket");
 
 task.post("/", async (req, res) => {
   console.log(req.body);
@@ -31,10 +31,10 @@ task.post("/", async (req, res) => {
     });
 
     await task.save();
-    
-    return res.status(200).send({ message: "Task Added Successfully" });
+    socket.emit("taskCreated",`New task has been created by ${username}`);
+    res.status(200).send({ message: "Task Added Successfully" });
   } catch (error) {
-    return  res.status(400).send({ message: error.message });
+    res.status(400).send({ message: error.message });
   }
 });
 
@@ -44,12 +44,12 @@ task.get("/", async (req, res) => {
   try {
     const tasks = await user_Task.find({ id });
     if(tasks.length > 0) {
-      return res.status(200).send(tasks);
+    res.status(200).send(tasks);
     }else{
-      return res.status(400).send("No task present");
+      res.status(400).send("No task present");
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message, route: "/ route of task" });
+    res.status(400).send({ message: error.message, route: "/ route of task" });
   }
 });
 
@@ -81,10 +81,10 @@ task.get("/filter_task", async (req, res) => {
     if (tasks.length) {
       res.status(200).send(tasks);
     } else {
-      return res.status(200).send({ message: "No task found" });
+      res.status(200).send({ message: "No task found" });
     }
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    res.status(400).send({ message: error.message });
   }
 });
 
@@ -106,12 +106,12 @@ task.patch("/update_task/:id", async (req, res) => {
     
     socket.emit("taskCreated",`New task has been updated as ${task.status?"Completed":"Pending"} by ${task.name}`);
 
-    return res.status(200).send({
+    res.status(200).send({
       message: "Task status updated successfully",
       status: task.status,
     });
   } catch (error) {
-    return res.status(400).send({ message: error.message });
+    res.status(400).send({ message: error.message });
   }
 });
 
@@ -132,9 +132,9 @@ task.get("/sort", async (req, res) => {
     const sortedTasks = await user_Task
       .find({ id: req.body.id })
       .sort(sortCriteria);
-      return res.status(200).json(sortedTasks);
+    res.status(200).json(sortedTasks);
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -145,13 +145,14 @@ task.delete("/delete_task/:id", async (req, res) => {
   const data = await user_Task.findById(id);
   try {
     if (req.body.id !== data.id) {
-      return res
+      res
         .status(401)
         .send({ message: "You are not allowed to delete others task" });
     } else {
       await user_Task.findByIdAndDelete({ _id: id });
-      
-      return res
+      socket.emit("taskCreated",`New task has been delted by ${data.name}`);
+
+      res
         .status(200)
         .send({ message: "The Task Has Been Deleted Successfully" });
     }

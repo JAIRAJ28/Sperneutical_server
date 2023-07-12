@@ -1,5 +1,7 @@
 const jwt=require('jsonwebtoken')
 
+
+
 const auth=async(req,res,next)=>{
    const token=req.headers.authorization
    try {
@@ -10,11 +12,11 @@ const auth=async(req,res,next)=>{
         req.body.id=decoded.id
         next(); 
     } else {
-        return res.send({ msg: "Please Login first" });
+        res.send({ msg: "Please Login first" });
     }
     }
    } catch (error) {
-    return res.status(400).send({msg:"Auth Middleware Error", error: error})
+    res.status(400).send({msg:"Auth Middleware Error", error: error})
    }
 }
 
